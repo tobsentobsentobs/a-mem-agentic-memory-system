@@ -46,6 +46,57 @@ Gibt Statistiken über das Memory System zurück.
 {}
 ```
 
+### 4. `delete_atomic_note`
+Löscht eine Note aus dem Memory System. Entfernt die Note aus Graph und Vector Store sowie alle zugehörigen Verbindungen.
+
+**Parameter:**
+- `note_id` (string, required): Die UUID der Note, die gelöscht werden soll
+
+**Beispiel:**
+```json
+{
+  "note_id": "732c8c3b-7c71-42a6-9534-a611b4ffe7bf"
+}
+```
+
+### 5. `add_file`
+Speichert den Inhalt einer Datei (z.B. .md) als Note im Memory System. Unterstützt automatisches Chunking für große Dateien (>16KB).
+
+**Parameter:**
+- `file_path` (string, optional): Pfad zur Datei, die gespeichert werden soll (relativ oder absolut)
+- `file_content` (string, optional): Alternativ: Direkter Dateiinhalt als String (wenn file_path nicht angegeben)
+- `chunk_size` (integer, optional): Maximale Größe pro Chunk in Bytes (Standard: 15000, Max: 16384)
+
+**Hinweis:** Entweder `file_path` ODER `file_content` muss angegeben werden.
+
+**Beispiel:**
+```json
+{
+  "file_path": "documentation.md",
+  "chunk_size": 15000
+}
+```
+
+Oder mit direktem Inhalt:
+```json
+{
+  "file_content": "# Dokumentation\n\nDies ist der Inhalt...",
+  "chunk_size": 15000
+}
+```
+
+### 6. `reset_memory`
+Setzt das komplette Memory System zurück (Graph + Vector Store). Löscht alle Notes, Edges und Embeddings.
+
+**⚠️ ACHTUNG:** Diese Aktion kann nicht rückgängig gemacht werden!
+
+**Parameter:** Keine
+
+**Beispiel:**
+```json
+{}
+```
+
 ## 🚀 Installation & Start
 
 ### 1. Dependencies installieren
@@ -68,30 +119,68 @@ python -m src.a_mem.main
 
 ## 📝 Cursor/IDE Konfiguration
 
-Füge folgende Konfiguration zu deiner `mcp.json` hinzu:
+### Cursor IDE
+
+Füge folgende Konfiguration zu deiner MCP-Konfigurationsdatei hinzu:
+- Windows: `%APPDATA%\Cursor\User\globalStorage\saoudrizwan.claude-dev\settings\cline_mcp_settings.json`
+- macOS: `~/Library/Application Support/Cursor/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json`
+- Linux: `~/.config/Cursor/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json`
 
 ```json
 {
   "mcpServers": {
     "a-mem": {
       "command": "python",
-      "args": [
-        "C:\\Users\\tobs\\Downloads\\a-mem_-agentic-memory-system\\a-mem_-agentic-memory-system\\mcp_server.py"
-      ],
-      "env": {}
+      "args": ["-m", "src.a_mem.main"],
+      "cwd": "/path/to/a-mem-agentic-memory-system"
     }
   }
 }
 ```
 
-**Wichtig:** Passe den Pfad zu deinem System an!
+**Wichtig:** Passe `cwd` auf den absoluten Pfad zu deinem Projekt-Verzeichnis an!
+
+### Visual Studio Code
+
+Falls eine MCP Extension verfügbar ist, nutze die VSCode Settings (JSON) oder eine `mcp.json` Datei im Projekt-Root:
+
+```json
+{
+  "mcpServers": {
+    "a-mem": {
+      "command": "python",
+      "args": ["-m", "src.a_mem.main"],
+      "cwd": "${workspaceFolder}"
+    }
+  }
+}
+```
 
 ## 🔧 Konfiguration
 
-Der Server nutzt die Konfiguration aus `src/a_mem/config.py`:
-- **LLM:** `qwen3:4b` (Ollama)
-- **Embedding:** `nomic-embed-text:latest` (Ollama)
-- **Ollama URL:** `http://localhost:11434`
+Der Server nutzt die Konfiguration aus `src/a_mem/config.py` und `.env` Datei.
+
+### Environment Variables (.env)
+
+Kopiere `.env.example` zu `.env` und passe die Werte an:
+
+**Ollama (Standard):**
+```env
+LLM_PROVIDER=ollama
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_LLM_MODEL=qwen3:4b
+OLLAMA_EMBEDDING_MODEL=nomic-embed-text:latest
+```
+
+**OpenRouter:**
+```env
+LLM_PROVIDER=openrouter
+OPENROUTER_API_KEY=your_api_key_here
+OPENROUTER_LLM_MODEL=openai/gpt-4o-mini
+OPENROUTER_EMBEDDING_MODEL=openai/text-embedding-3-small
+```
+
+### Ollama Setup (bei LLM_PROVIDER=ollama)
 
 Stelle sicher, dass Ollama läuft und beide Modelle installiert sind:
 ```bash
@@ -123,6 +212,29 @@ retrieve_memories(
 ```python
 # Via MCP Tool
 get_memory_stats()
+```
+
+### Note löschen:
+```python
+# Via MCP Tool
+delete_atomic_note(
+    note_id="732c8c3b-7c71-42a6-9534-a611b4ffe7bf"
+)
+```
+
+### Datei importieren:
+```python
+# Via MCP Tool - Automatisches Chunking bei großen Dateien
+add_file(
+    file_path="documentation.md",
+    chunk_size=15000
+)
+```
+
+### Memory System zurücksetzen:
+```python
+# Via MCP Tool - ⚠️ LÖSCHT ALLES!
+reset_memory()
 ```
 
 ## ✅ Status

@@ -102,7 +102,7 @@ Resets the complete memory system (Graph + Vector Store). Deletes all notes, edg
 ### 1. Install Dependencies
 
 ```bash
-pip install mcp
+pip install -r requirements.txt
 ```
 
 ### 2. Start MCP Server
@@ -132,7 +132,7 @@ Add the following configuration to your MCP configuration file:
     "a-mem": {
       "command": "python",
       "args": ["-m", "src.a_mem.main"],
-      "cwd": "/path/to/a-mem-agentic-memory-system"
+      "cwd": "/path/to/a-mem-mcp-server"
     }
   }
 }

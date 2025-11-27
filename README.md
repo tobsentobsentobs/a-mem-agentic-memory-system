@@ -143,7 +143,7 @@ python mcp_server.py
         "-m",
         "src.a_mem.main"
       ],
-      "cwd": "/path/to/a-mem-agentic-memory-system"
+      "cwd": "/path/to/a-mem-mcp-server"
     }
   }
 }
@@ -153,7 +153,7 @@ python mcp_server.py
 
 3. Restart Cursor to load the configuration.
 
-#### Visual Studio Code (mit MCP Extension)
+#### Visual Studio Code (with MCP Extension)
 
 1. Install the MCP Extension for VSCode (if available)
 
@@ -169,7 +169,7 @@ python mcp_server.py
     "a-mem": {
       "command": "python",
       "args": ["-m", "src.a_mem.main"],
-      "cwd": "/path/to/a-mem-agentic-memory-system"
+      "cwd": "/path/to/a-mem-mcp-server"
     }
   }
 }
@@ -202,12 +202,12 @@ After configuration, the MCP tools are directly available in your IDE:
 
 See `MCP_SERVER_SETUP.md` for detailed information about all available tools.
 
-## 📚 Dokumentation
+## 📚 Documentation
 
-- `docs/ARCHITECTURE.md` - System Architecture
-- `docs/FINAL_COMPLIANCE_CHECK.md` - Paper Compliance
+- `MCP_SERVER_SETUP.md` - MCP Server Setup and Configuration
 - `docs/TEST_REPORT.md` - Test Results
-- `MCP_SERVER_SETUP.md` - MCP Server Setup
+- `docs/MCP_SERVER_TEST_REPORT.md` - MCP Server Integration Tests
+- `docs/EMBEDDING_DIMENSIONS.md` - Embedding Dimension Handling Guide
 
 ## 🧪 Tests
 

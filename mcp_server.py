@@ -1,7 +1,7 @@
 """
 MCP Server Entry Point
 
-Startet den A-MEM MCP Server.
+Starts the A-MEM MCP Server.
 """
 
 import asyncio

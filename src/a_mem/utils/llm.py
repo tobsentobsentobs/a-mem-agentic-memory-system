@@ -30,7 +30,7 @@ class LLMService:
         self.embedding_model = settings.EMBEDDING_MODEL
         
     def _call_ollama(self, prompt: str, system: Optional[str] = None) -> str:
-        """Ruft Ollama LLM auf."""
+        """Calls Ollama LLM."""
         try:
             messages = []
             if system:
@@ -53,7 +53,7 @@ class LLMService:
             raise
     
     def _call_openrouter(self, prompt: str, system: Optional[str] = None) -> str:
-        """Ruft OpenRouter LLM auf."""
+        """Calls OpenRouter LLM."""
         if not self.openrouter_api_key:
             raise ValueError("OPENROUTER_API_KEY not set in environment variables")
         
@@ -65,7 +65,7 @@ class LLMService:
             
             headers = {
                 "Authorization": f"Bearer {self.openrouter_api_key}",
-                "HTTP-Referer": "https://github.com/a-mem-system",  # Optional
+                "HTTP-Referer": "https://github.com/tobsentobsentobs/a-mem-mcp-server",  # Optional
                 "X-Title": "A-MEM Agentic Memory System"  # Optional
             }
             
@@ -92,13 +92,13 @@ class LLMService:
                 return self._call_openrouter(prompt, system)
             except Exception as e:
                 print(f"OpenRouter failed, falling back to Ollama: {e}")
-                # Fallback zu Ollama
+                # Fallback to Ollama
                 return self._call_ollama(prompt, system)
         else:
             return self._call_ollama(prompt, system)
 
     def _get_embedding_ollama(self, text: str) -> List[float]:
-        """Ruft Ollama Embedding API auf."""
+        """Calls Ollama Embedding API."""
         try:
             response = requests.post(
                 f"{self.ollama_base_url}/api/embeddings",
@@ -113,17 +113,17 @@ class LLMService:
         except Exception as e:
             print(f"Ollama Embedding Error: {e}")
             # Fallback: Mock embedding
-            return [0.0] * 768  # nomic-embed-text hat 768 Dimensionen
+            return [0.0] * 768  # nomic-embed-text has 768 dimensions
     
     def _get_embedding_openrouter(self, text: str) -> List[float]:
-        """Ruft OpenRouter Embedding API auf."""
+        """Calls OpenRouter Embedding API."""
         if not self.openrouter_api_key:
             raise ValueError("OPENROUTER_API_KEY not set in environment variables")
         
         try:
             headers = {
                 "Authorization": f"Bearer {self.openrouter_api_key}",
-                "HTTP-Referer": "https://github.com/a-mem-system",
+                "HTTP-Referer": "https://github.com/tobsentobsentobs/a-mem-mcp-server",
                 "X-Title": "A-MEM Agentic Memory System"
             }
             
@@ -170,7 +170,7 @@ class LLMService:
                 return self._get_embedding_openrouter(text)
             except Exception as e:
                 print(f"OpenRouter embedding failed, falling back to Ollama: {e}")
-                # Fallback zu Ollama
+                # Fallback to Ollama
                 return self._get_embedding_ollama(text)
         else:
             return self._get_embedding_ollama(text)

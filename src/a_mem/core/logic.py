@@ -1,7 +1,7 @@
 """
 Core Logic: MemoryController
 
-Implementiert Async Non-Blocking I/O mittels `run_in_executor` und Batch-Saving Strategie.
+Implements Async Non-Blocking I/O using `run_in_executor` and Batch-Saving strategy.
 """
 
 import asyncio
@@ -17,8 +17,8 @@ class MemoryController:
 
     async def create_note(self, input_data: NoteInput) -> str:
         """
-        Phase 1: Erstellung. 
-        Kritische I/O Operationen werden in Threads ausgelagert.
+        Phase 1: Creation. 
+        Critical I/O operations are offloaded to threads.
         """
         loop = asyncio.get_running_loop()
 
@@ -34,9 +34,9 @@ class MemoryController:
             tags=metadata.get("tags", [])
         )
         
-        # 3. Embedding-Berechnung (Paper Section 3.1, Formel 3):
+        # 3. Embedding calculation (Paper Section 3.1, Formula 3):
         # ei = fenc[concat(ci, Ki, Gi, Xi)]
-        # Konkatenation aller Text-Komponenten für vollständige semantische Repräsentation
+        # Concatenation of all text components for complete semantic representation
         text_for_embedding = f"{note.content} {note.contextual_summary} {' '.join(note.keywords)} {' '.join(note.tags)}"
         embedding = await loop.run_in_executor(None, self.llm.get_embedding, text_for_embedding)
         
@@ -44,7 +44,7 @@ class MemoryController:
         await loop.run_in_executor(None, self.storage.vector.add, note, embedding)
         await loop.run_in_executor(None, self.storage.graph.add_node, note)
         
-        # Explizites Speichern des Snapshots nach Hinzufügen
+        # Explicit snapshot save after adding
         await loop.run_in_executor(None, self.storage.graph.save_snapshot)
         
         # 5. Background Evolution
@@ -54,14 +54,14 @@ class MemoryController:
 
     async def _evolve_memory(self, new_note: AtomicNote, embedding: List[float]):
         """
-        Phase 2: Asynchrone Wissens-Evolution.
-        Batch-Update Strategie für den Graphen.
+        Phase 2: Asynchronous Knowledge Evolution.
+        Batch-Update strategy for the graph.
         """
         loop = asyncio.get_running_loop()
         print(f"🔄 Evolving memory for note {new_note.id}...")
         
         try:
-            # 1. Kandidaten Suche (I/O in Thread)
+            # 1. Candidate search (I/O in thread)
             candidate_ids, distances = await loop.run_in_executor(
                 None, self.storage.vector.query, embedding, 5
             )
@@ -70,7 +70,7 @@ class MemoryController:
             evolutions_found = 0
             candidate_notes = []
             
-            # 2. Linking Logik + Memory Evolution
+            # 2. Linking logic + Memory Evolution
             for c_id, dist in zip(candidate_ids, distances):
                 if c_id == new_note.id: continue
                 
@@ -87,12 +87,12 @@ class MemoryController:
                 
                 if is_related and relation:
                     print(f"🔗 Linking {new_note.id} -> {c_id} ({relation.relation_type})")
-                    # In-Memory Update (schnell)
+                    # In-Memory Update (fast)
                     self.storage.graph.add_edge(relation)
                     links_found += 1
             
             # 3. Memory Evolution (Paper Section 3.3)
-            # Prüfe ob bestehende Memories aktualisiert werden sollen
+            # Check if existing memories should be updated
             for candidate_note in candidate_notes:
                 evolved_note = await loop.run_in_executor(
                     None, self.llm.evolve_memory, new_note, candidate_note
@@ -101,9 +101,9 @@ class MemoryController:
                 if evolved_note:
                     print(f"🧠 Evolving memory {candidate_note.id} based on new information")
                     
-                    # Neues Embedding berechnen (Paper Section 3.1, Formel 3):
+                    # Calculate new embedding (Paper Section 3.1, Formula 3):
                     # ei = fenc[concat(ci, Ki, Gi, Xi)]
-                    # Konkatenation aller Text-Komponenten inkl. tags
+                    # Concatenation of all text components including tags
                     evolved_text = f"{evolved_note.content} {evolved_note.contextual_summary} {' '.join(evolved_note.keywords)} {' '.join(evolved_note.tags)}"
                     new_embedding = await loop.run_in_executor(
                         None, self.llm.get_embedding, evolved_text
@@ -122,7 +122,7 @@ class MemoryController:
                     
                     evolutions_found += 1
             
-            # 4. Batch Save (Einmaliges Schreiben auf Platte)
+            # 4. Batch Save (Single write to disk)
             if links_found > 0 or evolutions_found > 0:
                 await loop.run_in_executor(None, self.storage.graph.save_snapshot)
                 print(f"✅ Evolution finished. {links_found} links, {evolutions_found} memory updates saved.")
@@ -146,21 +146,21 @@ class MemoryController:
             note = self.storage.get_note(n_id)
             if not note: continue
             
-            # Graph Traversal (In-Memory, schnell genug für Main Thread)
+            # Graph Traversal (In-Memory, fast enough for Main Thread)
             neighbors_data = self.storage.graph.get_neighbors(n_id)
             related_notes = []
             for n in neighbors_data:
-                # Validiere und filtere ungültige Nodes
+                # Validate and filter invalid nodes
                 if not n or not isinstance(n, dict):
                     continue
-                # Prüfe ob content vorhanden ist (required field)
+                # Check if content is present (required field)
                 if "content" not in n or not n.get("content"):
                     continue
                 try:
                     related_note = AtomicNote(**n)
                     related_notes.append(related_note)
                 except Exception as e:
-                    # Skip ungültige Nodes (z.B. durch Evolution korrupt)
+                    # Skip invalid nodes (e.g., corrupted by evolution)
                     print(f"Warning: Skipping invalid neighbor node: {e}")
                     continue
             
@@ -173,29 +173,29 @@ class MemoryController:
         return results
     
     async def delete_note(self, note_id: str) -> bool:
-        """Löscht eine Note aus Graph und Vector Store."""
+        """Deletes a note from Graph and Vector Store."""
         loop = asyncio.get_running_loop()
         
-        # Prüfe ob Note im Graph existiert (direkt, nicht über get_note)
+        # Check if note exists in graph (directly, not via get_note)
         note_exists = await loop.run_in_executor(
             None, lambda: note_id in self.storage.graph.graph
         )
         if not note_exists:
             return False
         
-        # Lösche aus beiden Stores (in Thread)
+        # Delete from both stores (in thread)
         success = await loop.run_in_executor(
             None, self.storage.delete_note, note_id
         )
         
         if success:
-            # Speichere Graph-Snapshot nach Löschung
+            # Save graph snapshot after deletion
             await loop.run_in_executor(None, self.storage.graph.save_snapshot)
         
         return success
     
     async def reset_memory(self) -> bool:
-        """Setzt das komplette Memory System zurück (Graph + Vector Store)."""
+        """Resets the complete memory system (Graph + Vector Store)."""
         loop = asyncio.get_running_loop()
         
         try:

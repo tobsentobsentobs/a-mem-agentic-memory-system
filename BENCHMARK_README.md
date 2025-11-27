@@ -1,61 +1,61 @@
 # Ollama Model Benchmark Tool
 
-Modernes TUI (Text User Interface) für Geschwindigkeits-Tests von Ollama-Modellen.
+Modern TUI (Text User Interface) for speed testing of Ollama models.
 
 ## 🚀 Features
 
-- ✅ **Moderne TUI** mit Textual Framework
-- ✅ **Live Metriken**: Tokens/sec, Latency, First Token Time
-- ✅ **Multi-Model Testing**: Teste verschiedene Modelle nacheinander
-- ✅ **Results Export**: Speichere Ergebnisse als JSON
-- ✅ **Real-time Progress**: Live Progress Bar während Benchmark
-- ✅ **Interactive Logs**: Detaillierte Logs für jeden Test
+- ✅ **Modern TUI** with Textual Framework
+- ✅ **Live Metrics**: Tokens/sec, Latency, First Token Time
+- ✅ **Multi-Model Testing**: Test different models sequentially
+- ✅ **Results Export**: Save results as JSON
+- ✅ **Real-time Progress**: Live progress bar during benchmark
+- ✅ **Interactive Logs**: Detailed logs for each test
 
 ## 📋 Installation
 
 ```bash
-# Installiere Dependencies
+# Install Dependencies
 pip install textual requests
 
-# Oder nutze requirements.txt
+# Or use requirements.txt
 pip install -r requirements.txt
 ```
 
-## 🎯 Verwendung
+## 🎯 Usage
 
 ```bash
-# Starte das Benchmark Tool
+# Start the benchmark tool
 python ollama_benchmark.py
 ```
 
 ### TUI Navigation
 
-- **Model auswählen**: Dropdown-Menü oben
-- **Prompt anpassen**: Text-Input für Test-Prompt
-- **Benchmark starten**: 
-  - Button "🚀 Run Benchmark" klicken
-  - Oder Taste `r` drücken
-- **Results löschen**: 
-  - Button "🗑️ Clear Results" klicken
-  - Oder Taste `c` drücken
-- **Results speichern**: 
-  - Button "💾 Save Results" klicken
-  - Oder Taste `s` drücken
-- **Beenden**: Taste `q` drücken
+- **Select Model**: Dropdown menu at the top
+- **Adjust Prompt**: Text input for test prompt
+- **Start Benchmark**: 
+  - Click button "🚀 Run Benchmark"
+  - Or press key `r`
+- **Clear Results**: 
+  - Click button "🗑️ Clear Results"
+  - Or press key `c`
+- **Save Results**: 
+  - Click button "💾 Save Results"
+  - Or press key `s`
+- **Exit**: Press key `q`
 
-## 📊 Metriken
+## 📊 Metrics
 
-Das Tool misst folgende Performance-Metriken:
+The tool measures the following performance metrics:
 
-- **Tokens/sec**: Generierungsgeschwindigkeit
-- **Total Time**: Gesamte Antwortzeit
-- **Tokens**: Anzahl generierter Tokens
-- **First Token Time**: Zeit bis zum ersten Token (TTFT)
-- **Avg Token Time**: Durchschnittliche Zeit pro Token
+- **Tokens/sec**: Generation speed
+- **Total Time**: Total response time
+- **Tokens**: Number of generated tokens
+- **First Token Time**: Time to first token (TTFT)
+- **Avg Token Time**: Average time per token
 
 ## 💾 Export
 
-Results werden als JSON gespeichert:
+Results are saved as JSON:
 
 ```json
 [
@@ -74,26 +74,26 @@ Results werden als JSON gespeichert:
 
 ## 🎨 Screenshots
 
-Das TUI zeigt:
-- Model-Selektor
-- Prompt-Editor
-- Live Progress Bar
-- Results-Tabelle mit allen Metriken
-- Detaillierte Logs
+The TUI shows:
+- Model selector
+- Prompt editor
+- Live progress bar
+- Results table with all metrics
+- Detailed logs
 
-## 🔧 Anpassungen
+## 🔧 Customization
 
 ### Custom Prompts
 
-Du kannst den Standard-Prompt im Code ändern:
+You can change the default prompt in the code:
 
 ```python
-current_prompt = reactive("Dein Custom Prompt hier...")
+current_prompt = reactive("Your custom prompt here...")
 ```
 
 ### Max Tokens
 
-Standard: 100 Tokens. Ändere in `run_benchmark()`:
+Default: 100 tokens. Change in `run_benchmark()`:
 
 ```python
 result = await loop.run_in_executor(
@@ -101,25 +101,25 @@ result = await loop.run_in_executor(
     benchmark.benchmark_model,
     self.current_model,
     self.current_prompt,
-    200  # max_tokens anpassen
+    200  # adjust max_tokens
 )
 ```
 
 ## 🐛 Troubleshooting
 
 **"No models found"**
-- Stelle sicher, dass Ollama läuft: `ollama serve`
-- Prüfe, ob Modelle installiert sind: `ollama list`
+- Make sure Ollama is running: `ollama serve`
+- Check if models are installed: `ollama list`
 
 **"Connection refused"**
-- Prüfe Ollama URL (Standard: `http://localhost:11434`)
-- Ändere `OLLAMA_BASE_URL` im Code falls nötig
+- Check Ollama URL (default: `http://localhost:11434`)
+- Change `OLLAMA_BASE_URL` in code if necessary
 
-**Benchmark hängt**
-- Prüfe Ollama Logs
-- Stelle sicher, dass genug RAM/VRAM verfügbar ist
+**Benchmark hangs**
+- Check Ollama logs
+- Make sure enough RAM/VRAM is available
 
-## 📝 Beispiel-Output
+## 📝 Example Output
 
 ```
 Model          | Tokens/sec | Total Time | Tokens | First Token | Avg Token
@@ -130,23 +130,20 @@ mistral:7b     | 5.23       | 19.12      | 100    | 0.456       | 191.20
 
 ## 🎯 Best Practices
 
-1. **Warm-up**: Erste Anfrage kann langsamer sein (Model Loading)
-2. **Konsistenz**: Nutze denselben Prompt für faire Vergleiche
-3. **Mehrere Runs**: Führe mehrere Benchmarks aus für Durchschnittswerte
-4. **System Load**: Schließe andere GPU-intensive Apps während Tests
+1. **Warm-up**: First request may be slower (Model Loading)
+2. **Consistency**: Use the same prompt for fair comparisons
+3. **Multiple Runs**: Run multiple benchmarks for average values
+4. **System Load**: Close other GPU-intensive apps during tests
 
-## 📚 Technische Details
+## 📚 Technical Details
 
-- **Framework**: Textual (moderne Python TUI Library)
+- **Framework**: Textual (modern Python TUI library)
 - **API**: Ollama REST API (`/api/generate`)
-- **Streaming**: Nutzt Streaming für präzise Token-Messung
-- **Async**: Asynchrone Ausführung für responsive UI
+- **Streaming**: Uses streaming for precise token measurement
+- **Async**: Asynchronous execution for responsive UI
 
 ## 🔗 Links
 
 - [Textual Documentation](https://textual.textualize.io/)
 - [Ollama API Docs](https://github.com/ollama/ollama/blob/main/docs/api.md)
 - [Ollama Models](https://ollama.com/library)
-
-
-

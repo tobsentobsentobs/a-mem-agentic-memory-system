@@ -1,5 +1,5 @@
 """
-Konfiguration für A-MEM System
+Configuration for A-MEM System
 """
 
 import os
@@ -34,14 +34,14 @@ class Config:
     # Model Settings (kompatibel mit altem Code)
     @property
     def LLM_MODEL(self):
-        """Gibt das aktuelle LLM Model zurück (Provider-abhängig)"""
+        """Returns the current LLM model (provider-dependent)"""
         if self.LLM_PROVIDER == "openrouter":
             return self.OPENROUTER_LLM_MODEL
         return self.OLLAMA_LLM_MODEL
     
     @property
     def EMBEDDING_MODEL(self):
-        """Gibt das aktuelle Embedding Model zurück (Provider-abhängig)"""
+        """Returns the current embedding model (provider-dependent)"""
         if self.LLM_PROVIDER == "openrouter":
             return self.OPENROUTER_EMBEDDING_MODEL
         return self.OLLAMA_EMBEDDING_MODEL

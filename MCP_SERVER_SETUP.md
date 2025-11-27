@@ -1,34 +1,34 @@
-# MCP Server Setup für A-MEM
+# MCP Server Setup for A-MEM
 
-## 📋 Übersicht
+## 📋 Overview
 
-Der A-MEM MCP Server stellt Tools für das Agentic Memory System bereit.
+The A-MEM MCP Server provides tools for the Agentic Memory System.
 
-## 🛠️ Verfügbare Tools
+## 🛠️ Available Tools
 
 ### 1. `create_atomic_note`
-Speichert eine neue Information im Memory System.
+Stores a new piece of information in the memory system.
 
-**Parameter:**
-- `content` (string, required): Der Text der Notiz/Erinnerung
-- `source` (string, optional): Quelle der Information (Standard: "user_input")
+**Parameters:**
+- `content` (string, required): The text of the note/memory
+- `source` (string, optional): Source of the information (default: "user_input")
 
-**Beispiel:**
+**Example:**
 ```json
 {
-  "content": "Python async/await ermöglicht nicht-blockierende I/O Operationen",
+  "content": "Python async/await enables non-blocking I/O operations",
   "source": "user_input"
 }
 ```
 
 ### 2. `retrieve_memories`
-Sucht nach relevanten Erinnerungen basierend auf semantischer Ähnlichkeit.
+Searches for relevant memories based on semantic similarity.
 
-**Parameter:**
-- `query` (string, required): Die Suchanfrage
-- `max_results` (integer, optional): Maximale Anzahl Ergebnisse (Standard: 5, Max: 20)
+**Parameters:**
+- `query` (string, required): The search query
+- `max_results` (integer, optional): Maximum number of results (default: 5, max: 20)
 
-**Beispiel:**
+**Example:**
 ```json
 {
   "query": "Python async programming",
@@ -37,22 +37,22 @@ Sucht nach relevanten Erinnerungen basierend auf semantischer Ähnlichkeit.
 ```
 
 ### 3. `get_memory_stats`
-Gibt Statistiken über das Memory System zurück.
+Returns statistics about the memory system.
 
-**Parameter:** Keine
+**Parameters:** None
 
-**Beispiel:**
+**Example:**
 ```json
 {}
 ```
 
 ### 4. `delete_atomic_note`
-Löscht eine Note aus dem Memory System. Entfernt die Note aus Graph und Vector Store sowie alle zugehörigen Verbindungen.
+Deletes a note from the memory system. Removes the note from Graph and Vector Store as well as all associated connections.
 
-**Parameter:**
-- `note_id` (string, required): Die UUID der Note, die gelöscht werden soll
+**Parameters:**
+- `note_id` (string, required): The UUID of the note to be deleted
 
-**Beispiel:**
+**Example:**
 ```json
 {
   "note_id": "732c8c3b-7c71-42a6-9534-a611b4ffe7bf"
@@ -60,16 +60,16 @@ Löscht eine Note aus dem Memory System. Entfernt die Note aus Graph und Vector 
 ```
 
 ### 5. `add_file`
-Speichert den Inhalt einer Datei (z.B. .md) als Note im Memory System. Unterstützt automatisches Chunking für große Dateien (>16KB).
+Stores the content of a file (e.g., .md) as a note in the memory system. Supports automatic chunking for large files (>16KB).
 
-**Parameter:**
-- `file_path` (string, optional): Pfad zur Datei, die gespeichert werden soll (relativ oder absolut)
-- `file_content` (string, optional): Alternativ: Direkter Dateiinhalt als String (wenn file_path nicht angegeben)
-- `chunk_size` (integer, optional): Maximale Größe pro Chunk in Bytes (Standard: 15000, Max: 16384)
+**Parameters:**
+- `file_path` (string, optional): Path to the file to be stored (relative or absolute)
+- `file_content` (string, optional): Alternatively: Direct file content as string (when file_path is not provided)
+- `chunk_size` (integer, optional): Maximum size per chunk in bytes (default: 15000, max: 16384)
 
-**Hinweis:** Entweder `file_path` ODER `file_content` muss angegeben werden.
+**Note:** Either `file_path` OR `file_content` must be provided.
 
-**Beispiel:**
+**Example:**
 ```json
 {
   "file_path": "documentation.md",
@@ -77,51 +77,51 @@ Speichert den Inhalt einer Datei (z.B. .md) als Note im Memory System. Unterstü
 }
 ```
 
-Oder mit direktem Inhalt:
+Or with direct content:
 ```json
 {
-  "file_content": "# Dokumentation\n\nDies ist der Inhalt...",
+  "file_content": "# Documentation\n\nThis is the content...",
   "chunk_size": 15000
 }
 ```
 
 ### 6. `reset_memory`
-Setzt das komplette Memory System zurück (Graph + Vector Store). Löscht alle Notes, Edges und Embeddings.
+Resets the complete memory system (Graph + Vector Store). Deletes all notes, edges, and embeddings.
 
-**⚠️ ACHTUNG:** Diese Aktion kann nicht rückgängig gemacht werden!
+**⚠️ WARNING:** This action cannot be undone!
 
-**Parameter:** Keine
+**Parameters:** None
 
-**Beispiel:**
+**Example:**
 ```json
 {}
 ```
 
 ## 🚀 Installation & Start
 
-### 1. Dependencies installieren
+### 1. Install Dependencies
 
 ```bash
 pip install mcp
 ```
 
-### 2. MCP Server starten
+### 2. Start MCP Server
 
 ```bash
 python mcp_server.py
 ```
 
-Oder direkt:
+Or directly:
 
 ```bash
 python -m src.a_mem.main
 ```
 
-## 📝 Cursor/IDE Konfiguration
+## 📝 Cursor/IDE Configuration
 
 ### Cursor IDE
 
-Füge folgende Konfiguration zu deiner MCP-Konfigurationsdatei hinzu:
+Add the following configuration to your MCP configuration file:
 - Windows: `%APPDATA%\Cursor\User\globalStorage\saoudrizwan.claude-dev\settings\cline_mcp_settings.json`
 - macOS: `~/Library/Application Support/Cursor/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json`
 - Linux: `~/.config/Cursor/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json`
@@ -138,11 +138,11 @@ Füge folgende Konfiguration zu deiner MCP-Konfigurationsdatei hinzu:
 }
 ```
 
-**Wichtig:** Passe `cwd` auf den absoluten Pfad zu deinem Projekt-Verzeichnis an!
+**Important:** Adjust `cwd` to the absolute path to your project directory!
 
 ### Visual Studio Code
 
-Falls eine MCP Extension verfügbar ist, nutze die VSCode Settings (JSON) oder eine `mcp.json` Datei im Projekt-Root:
+If an MCP Extension is available, use VSCode Settings (JSON) or an `mcp.json` file in the project root:
 
 ```json
 {
@@ -156,15 +156,15 @@ Falls eine MCP Extension verfügbar ist, nutze die VSCode Settings (JSON) oder e
 }
 ```
 
-## 🔧 Konfiguration
+## 🔧 Configuration
 
-Der Server nutzt die Konfiguration aus `src/a_mem/config.py` und `.env` Datei.
+The server uses configuration from `src/a_mem/config.py` and `.env` file.
 
 ### Environment Variables (.env)
 
-Kopiere `.env.example` zu `.env` und passe die Werte an:
+Copy `.env.example` to `.env` and adjust the values:
 
-**Ollama (Standard):**
+**Ollama (default):**
 ```env
 LLM_PROVIDER=ollama
 OLLAMA_BASE_URL=http://localhost:11434
@@ -180,17 +180,17 @@ OPENROUTER_LLM_MODEL=openai/gpt-4o-mini
 OPENROUTER_EMBEDDING_MODEL=openai/text-embedding-3-small
 ```
 
-### Ollama Setup (bei LLM_PROVIDER=ollama)
+### Ollama Setup (when LLM_PROVIDER=ollama)
 
-Stelle sicher, dass Ollama läuft und beide Modelle installiert sind:
+Make sure Ollama is running and both models are installed:
 ```bash
 ollama pull qwen3:4b
 ollama pull nomic-embed-text:latest
 ```
 
-## 📊 Beispiel-Nutzung
+## 📊 Example Usage
 
-### Memory erstellen:
+### Create Memory:
 ```python
 # Via MCP Tool
 create_atomic_note(
@@ -199,7 +199,7 @@ create_atomic_note(
 )
 ```
 
-### Memory suchen:
+### Search Memory:
 ```python
 # Via MCP Tool
 retrieve_memories(
@@ -208,13 +208,13 @@ retrieve_memories(
 )
 ```
 
-### Statistiken abrufen:
+### Get Statistics:
 ```python
 # Via MCP Tool
 get_memory_stats()
 ```
 
-### Note löschen:
+### Delete Note:
 ```python
 # Via MCP Tool
 delete_atomic_note(
@@ -222,28 +222,25 @@ delete_atomic_note(
 )
 ```
 
-### Datei importieren:
+### Import File:
 ```python
-# Via MCP Tool - Automatisches Chunking bei großen Dateien
+# Via MCP Tool - Automatic chunking for large files
 add_file(
     file_path="documentation.md",
     chunk_size=15000
 )
 ```
 
-### Memory System zurücksetzen:
+### Reset Memory System:
 ```python
-# Via MCP Tool - ⚠️ LÖSCHT ALLES!
+# Via MCP Tool - ⚠️ DELETES EVERYTHING!
 reset_memory()
 ```
 
 ## ✅ Status
 
-Der MCP Server ist vollständig implementiert und nutzt:
-- ✅ Lokales Ollama (qwen3:4b für LLM, nomic-embed-text für Embeddings)
-- ✅ Async I/O für Performance
-- ✅ Memory Evolution im Hintergrund
-- ✅ Graph-basierte Verknüpfungen
-
-
-
+The MCP Server is fully implemented and uses:
+- ✅ Local Ollama (qwen3:4b for LLM, nomic-embed-text for embeddings)
+- ✅ Async I/O for performance
+- ✅ Memory Evolution in background
+- ✅ Graph-based linking

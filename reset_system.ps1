@@ -1,64 +1,63 @@
 # A-MEM System Reset Script
-# Löscht alle gespeicherten Daten (ChromaDB, Graph, Lock-Files)
+# Deletes all stored data (ChromaDB, Graph, Lock-Files)
 #
-# ⚠️  WICHTIG: Nach dem Reset muss der MCP Server neu gestartet werden!
-# Der Graph wird beim Server-Start geladen und bleibt im Memory.
-# Nur ein Neustart des Servers sorgt für einen wirklich leeren Graph.
+# ⚠️  IMPORTANT: After reset, the MCP Server must be restarted!
+# The graph is loaded on server start and remains in memory.
+# Only a server restart ensures a truly empty graph.
 
-Write-Host "🔄 Setze A-MEM System komplett zurück..." -ForegroundColor Yellow
+Write-Host "🔄 Resetting A-MEM system completely..." -ForegroundColor Yellow
 Write-Host ""
 
-# ChromaDB löschen
+# Delete ChromaDB
 if (Test-Path "data\chroma") {
     Remove-Item -Recurse -Force "data\chroma"
-    Write-Host "  ✅ ChromaDB gelöscht" -ForegroundColor Green
+    Write-Host "  ✅ ChromaDB deleted" -ForegroundColor Green
 } else {
-    Write-Host "  ⚠️  ChromaDB existiert nicht" -ForegroundColor Gray
+    Write-Host "  ⚠️  ChromaDB does not exist" -ForegroundColor Gray
 }
 
-# Graph löschen
+# Delete Graph
 if (Test-Path "data\graph\knowledge_graph.json") {
     Remove-Item -Force "data\graph\knowledge_graph.json"
-    Write-Host "  ✅ Graph gelöscht" -ForegroundColor Green
+    Write-Host "  ✅ Graph deleted" -ForegroundColor Green
 } else {
-    Write-Host "  ⚠️  Graph existiert nicht" -ForegroundColor Gray
+    Write-Host "  ⚠️  Graph does not exist" -ForegroundColor Gray
 }
 
-# Lock-File löschen
+# Delete Lock-File
 if (Test-Path "data\graph\graph.lock") {
     Remove-Item -Force "data\graph\graph.lock"
-    Write-Host "  ✅ Lock-File gelöscht" -ForegroundColor Green
+    Write-Host "  ✅ Lock-File deleted" -ForegroundColor Green
 } else {
-    Write-Host "  ⚠️  Lock-File existiert nicht" -ForegroundColor Gray
+    Write-Host "  ⚠️  Lock-File does not exist" -ForegroundColor Gray
 }
 
 Write-Host ""
-Write-Host "✅ Dateien gelöscht" -ForegroundColor Green
+Write-Host "✅ Files deleted" -ForegroundColor Green
 Write-Host ""
-Write-Host "⚠️  WICHTIGER HINWEIS:" -ForegroundColor Yellow
-Write-Host "   Der MCP Server muss NEU GESTARTET werden!" -ForegroundColor Yellow
-Write-Host "   Der Graph wird beim Server-Start geladen und bleibt im Memory." -ForegroundColor Yellow
-Write-Host "   Nur ein Neustart des Servers sorgt für einen wirklich leeren Graph." -ForegroundColor Yellow
+Write-Host "⚠️  IMPORTANT NOTE:" -ForegroundColor Yellow
+Write-Host "   The MCP Server must be RESTARTED!" -ForegroundColor Yellow
+Write-Host "   The graph is loaded on server start and remains in memory." -ForegroundColor Yellow
+Write-Host "   Only a server restart ensures a truly empty graph." -ForegroundColor Yellow
 Write-Host ""
-Write-Host "   In Cursor: MCP Server neu laden (Cursor Settings → MCP → Restart)" -ForegroundColor Cyan
+Write-Host "   In Cursor: Reload MCP Server (Cursor Settings → MCP → Restart)" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "📊 Verifikation:" -ForegroundColor Cyan
+Write-Host "📊 Verification:" -ForegroundColor Cyan
 
 if (Test-Path "data\chroma") {
-    Write-Host "  ❌ ChromaDB existiert noch" -ForegroundColor Red
+    Write-Host "  ❌ ChromaDB still exists" -ForegroundColor Red
 } else {
-    Write-Host "  ✅ ChromaDB gelöscht" -ForegroundColor Green
+    Write-Host "  ✅ ChromaDB deleted" -ForegroundColor Green
 }
 
 if (Test-Path "data\graph\knowledge_graph.json") {
-    Write-Host "  ❌ Graph existiert noch" -ForegroundColor Red
+    Write-Host "  ❌ Graph still exists" -ForegroundColor Red
 } else {
-    Write-Host "  ✅ Graph gelöscht" -ForegroundColor Green
+    Write-Host "  ✅ Graph deleted" -ForegroundColor Green
 }
 
 if (Test-Path "data\graph\graph.lock") {
-    Write-Host "  ❌ Lock-File existiert noch" -ForegroundColor Red
+    Write-Host "  ❌ Lock-File still exists" -ForegroundColor Red
 } else {
-    Write-Host "  ✅ Lock-File gelöscht" -ForegroundColor Green
+    Write-Host "  ✅ Lock-File deleted" -ForegroundColor Green
 }
-

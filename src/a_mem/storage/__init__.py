@@ -1,5 +1,5 @@
 """
-Storage Layer für A-MEM
+Storage Layer for A-MEM
 """
 
 from .engine import GraphStore, VectorStore, StorageManager

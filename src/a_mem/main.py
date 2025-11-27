@@ -1,7 +1,7 @@
 """
-MCP Server für A-MEM: Agentic Memory System
+MCP Server for A-MEM: Agentic Memory System
 
-Vollständiger MCP Server mit Tools für Memory Management.
+Complete MCP Server with tools for Memory Management.
 """
 
 import asyncio
@@ -21,21 +21,21 @@ controller = MemoryController()
 
 @server.list_tools()
 async def list_tools() -> list[Tool]:
-    """Listet alle verfügbaren Tools."""
+    """Lists all available tools."""
     return [
         Tool(
             name="create_atomic_note",
-            description="Speichert eine neue Information im Memory System. Startet automatisch den Linking- und Evolution-Prozess im Hintergrund.",
+            description="Stores a new piece of information in the memory system. Automatically starts the linking and evolution process in the background.",
             inputSchema={
                 "type": "object",
                 "properties": {
                     "content": {
                         "type": "string",
-                        "description": "Der Text der Notiz/Erinnerung, die gespeichert werden soll."
+                        "description": "The text of the note/memory to be stored."
                     },
                     "source": {
                         "type": "string",
-                        "description": "Quelle der Information (z.B. 'user_input', 'file', 'api').",
+                        "description": "Source of the information (e.g., 'user_input', 'file', 'api').",
                         "default": "user_input"
                     }
                 },
@@ -44,17 +44,17 @@ async def list_tools() -> list[Tool]:
         ),
         Tool(
             name="retrieve_memories",
-            description="Sucht nach relevanten Erinnerungen basierend auf semantischer Ähnlichkeit. Gibt die besten Matches mit verknüpften Kontexten zurück.",
+            description="Searches for relevant memories based on semantic similarity. Returns the best matches with linked contexts.",
             inputSchema={
                 "type": "object",
                 "properties": {
                     "query": {
                         "type": "string",
-                        "description": "Die Suchanfrage für die Memory-Suche."
+                        "description": "The search query for the memory search."
                     },
                     "max_results": {
                         "type": "integer",
-                        "description": "Maximale Anzahl der Ergebnisse (Standard: 5).",
+                        "description": "Maximum number of results (default: 5).",
                         "default": 5,
                         "minimum": 1,
                         "maximum": 20
@@ -65,7 +65,7 @@ async def list_tools() -> list[Tool]:
         ),
         Tool(
             name="get_memory_stats",
-            description="Gibt Statistiken über das Memory System zurück (Anzahl Nodes, Edges, etc.).",
+            description="Returns statistics about the memory system (number of nodes, edges, etc.).",
             inputSchema={
                 "type": "object",
                 "properties": {}
@@ -73,13 +73,13 @@ async def list_tools() -> list[Tool]:
         ),
         Tool(
             name="delete_atomic_note",
-            description="Löscht eine Note aus dem Memory System. Entfernt die Note aus Graph und Vector Store sowie alle zugehörigen Verbindungen.",
+            description="Deletes a note from the memory system. Removes the note from Graph and Vector Store as well as all associated connections.",
             inputSchema={
                 "type": "object",
                 "properties": {
                     "note_id": {
                         "type": "string",
-                        "description": "Die UUID der Note, die gelöscht werden soll."
+                        "description": "The UUID of the note to be deleted."
                     }
                 },
                 "required": ["note_id"]
@@ -87,21 +87,21 @@ async def list_tools() -> list[Tool]:
         ),
         Tool(
             name="add_file",
-            description="Speichert den Inhalt einer Datei (z.B. .md) als Note im Memory System. Unterstützt automatisches Chunking für große Dateien (>16KB).",
+            description="Stores the content of a file (e.g., .md) as a note in the memory system. Supports automatic chunking for large files (>16KB).",
             inputSchema={
                 "type": "object",
                 "properties": {
                     "file_path": {
                         "type": "string",
-                        "description": "Pfad zur Datei, die gespeichert werden soll (relativ oder absolut)."
+                        "description": "Path to the file to be stored (relative or absolute)."
                     },
                     "file_content": {
                         "type": "string",
-                        "description": "Alternativ: Direkter Dateiinhalt als String (wenn file_path nicht angegeben)."
+                        "description": "Alternatively: Direct file content as string (when file_path is not provided)."
                     },
                     "chunk_size": {
                         "type": "integer",
-                        "description": "Maximale Größe pro Chunk in Bytes (Standard: 15000, um unter 16KB Limit zu bleiben).",
+                        "description": "Maximum size per chunk in bytes (default: 15000, to stay under 16KB limit).",
                         "default": 15000,
                         "minimum": 1000,
                         "maximum": 16384
@@ -112,7 +112,7 @@ async def list_tools() -> list[Tool]:
         ),
         Tool(
             name="reset_memory",
-            description="Setzt das komplette Memory System zurück (Graph + Vector Store). Löscht alle Notes, Edges und Embeddings. ACHTUNG: Diese Aktion kann nicht rückgängig gemacht werden!",
+            description="Resets the complete memory system (Graph + Vector Store). Deletes all notes, edges, and embeddings. WARNING: This action cannot be undone!",
             inputSchema={
                 "type": "object",
                 "properties": {}
@@ -122,7 +122,7 @@ async def list_tools() -> list[Tool]:
 
 @server.call_tool()
 async def call_tool(name: str, arguments: dict[str, Any]) -> Sequence[TextContent]:
-    """Führt ein Tool aus."""
+    """Executes a tool."""
     
     if name == "create_atomic_note":
         content = arguments.get("content", "")
@@ -260,7 +260,7 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> Sequence[TextConten
         file_content = arguments.get("file_content", "")
         chunk_size = arguments.get("chunk_size", 15000)
         
-        # Prüfe ob file_path oder file_content angegeben
+        # Check if file_path or file_content is provided
         if not file_path and not file_content:
             return [TextContent(
                 type="text",
@@ -268,7 +268,7 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> Sequence[TextConten
             )]
         
         try:
-            # Lese Datei falls file_path angegeben
+            # Read file if file_path is provided
             if file_path:
                 path = Path(file_path)
                 if not path.exists():
@@ -282,7 +282,7 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> Sequence[TextConten
                         file_content = f.read()
                     source = f"file:{path.name}"
                 except UnicodeDecodeError:
-                    # Fallback für Binärdateien
+                    # Fallback for binary files
                     with open(path, 'rb') as f:
                         content_bytes = f.read()
                     file_content = content_bytes.decode('utf-8', errors='replace')
@@ -290,12 +290,12 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> Sequence[TextConten
             else:
                 source = "file:direct_content"
             
-            # Prüfe Größe und chunk wenn nötig
+            # Check size and chunk if necessary
             content_bytes = file_content.encode('utf-8')
             file_size = len(content_bytes)
             
             if file_size <= chunk_size:
-                # Datei passt in eine Note
+                # File fits in one note
                 note_input = NoteInput(content=file_content, source=source)
                 note_id = await controller.create_note(note_input)
                 
@@ -307,7 +307,7 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> Sequence[TextConten
                     "message": f"File stored as single note with ID: {note_id}. Evolution started in background."
                 }
             else:
-                # Chunking erforderlich
+                # Chunking required
                 chunks = []
                 chunk_count = (file_size + chunk_size - 1) // chunk_size
                 
@@ -316,7 +316,7 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> Sequence[TextConten
                     end = min(start + chunk_size, file_size)
                     chunk_content = content_bytes[start:end].decode('utf-8', errors='replace')
                     
-                    # Füge Chunk-Info hinzu
+                    # Add chunk info
                     chunk_header = f"[Chunk {i+1}/{chunk_count} from {source}]\n\n"
                     chunk_note_content = chunk_header + chunk_content
                     
@@ -377,7 +377,7 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> Sequence[TextConten
         )]
 
 async def main():
-    """Hauptfunktion für den MCP Server."""
+    """Main function for the MCP Server."""
     async with stdio_server() as (read_stream, write_stream):
         await server.run(
             read_stream,

@@ -1,6 +1,6 @@
 # A-MEM: Agentic Memory System
 
-Ein agentisches Memory-System für LLM Agents basierend auf dem Zettelkasten-Prinzip.
+An agentic memory system for LLM agents based on the Zettelkasten principle.
 
 > **Based on:** ["A-Mem: Agentic Memory for LLM Agents"](https://arxiv.org/html/2502.12110v11)  
 > by Wujiang Xu, Zujie Liang, Kai Mei, Hang Gao, Juntao Tan, Yongfeng Zhang  
@@ -8,36 +8,36 @@ Ein agentisches Memory-System für LLM Agents basierend auf dem Zettelkasten-Pri
 
 ## 🚀 Features
 
-- ✅ **Note Construction**: Automatische Extraktion von Keywords, Tags und Contextual Summary
-- ✅ **Link Generation**: Automatische Verknüpfung ähnlicher Memories
-- ✅ **Memory Evolution**: Dynamische Aktualisierung bestehender Memories
-- ✅ **Semantic Retrieval**: Intelligente Suche mit Graph-Traversal
-- ✅ **Multi-Provider Support**: Ollama (lokal) oder OpenRouter (Cloud)
-- ✅ **Environment Variables**: Konfiguration über `.env` Datei
+- ✅ **Note Construction**: Automatic extraction of keywords, tags, and contextual summary
+- ✅ **Link Generation**: Automatic linking of similar memories
+- ✅ **Memory Evolution**: Dynamic updating of existing memories
+- ✅ **Semantic Retrieval**: Intelligent search with graph traversal
+- ✅ **Multi-Provider Support**: Ollama (local) or OpenRouter (cloud)
+- ✅ **Environment Variables**: Configuration via `.env` file
 
 ## 📋 Installation
 
-### 1. Dependencies installieren
+### 1. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Environment Variables konfigurieren
+### 2. Configure Environment Variables
 
-Kopiere `.env.example` zu `.env` und passe die Werte an:
+Copy `.env.example` to `.env` and adjust the values:
 
 ```bash
 cp .env.example .env
 ```
 
-**Konfiguration:**
+**Configuration:**
 
-- **LLM_PROVIDER**: `"ollama"` (lokal) oder `"openrouter"` (Cloud)
-- **Ollama**: Lokale Modelle (Standard)
-- **OpenRouter**: Cloud-basierte LLMs (benötigt API Key)
+- **LLM_PROVIDER**: `"ollama"` (local) or `"openrouter"` (cloud)
+- **Ollama**: Local models (default)
+- **OpenRouter**: Cloud-based LLMs (requires API key)
 
-**Beispiel `.env` für Ollama (Standard):**
+**Example `.env` for Ollama (default):**
 ```env
 LLM_PROVIDER=ollama
 OLLAMA_BASE_URL=http://localhost:11434
@@ -45,7 +45,7 @@ OLLAMA_LLM_MODEL=qwen3:4b
 OLLAMA_EMBEDDING_MODEL=nomic-embed-text:latest
 ```
 
-**Beispiel `.env` für OpenRouter:**
+**Example `.env` for OpenRouter:**
 ```env
 LLM_PROVIDER=openrouter
 OPENROUTER_API_KEY=your_api_key_here
@@ -53,16 +53,16 @@ OPENROUTER_LLM_MODEL=openai/gpt-4o-mini
 OPENROUTER_EMBEDDING_MODEL=openai/text-embedding-3-small
 ```
 
-### 3. Ollama Modelle installieren (nur bei LLM_PROVIDER=ollama)
+### 3. Install Ollama Models (only when LLM_PROVIDER=ollama)
 
 ```bash
 ollama pull qwen3:4b
 ollama pull nomic-embed-text:latest
 ```
 
-### 4. Ollama starten (nur bei LLM_PROVIDER=ollama)
+### 4. Start Ollama (only when LLM_PROVIDER=ollama)
 
-Stelle sicher, dass Ollama auf `http://localhost:11434` läuft.
+Make sure Ollama is running on `http://localhost:11434`.
 
 ## 🛠️ MCP Server
 
@@ -72,25 +72,25 @@ Stelle sicher, dass Ollama auf `http://localhost:11434` läuft.
 python mcp_server.py
 ```
 
-### Verfügbare Tools
+### Available Tools
 
-1. **`create_atomic_note`** - Speichert eine neue Information im Memory System
-2. **`retrieve_memories`** - Sucht nach relevanten Memories basierend auf semantischer Ähnlichkeit
-3. **`get_memory_stats`** - Gibt Statistiken über das Memory System zurück
-4. **`delete_atomic_note`** - Löscht eine Note aus dem Memory System
-5. **`add_file`** - Speichert den Inhalt einer Datei (z.B. .md) als Note, unterstützt automatisches Chunking
-6. **`reset_memory`** - Setzt das komplette Memory System zurück (⚠️ nicht rückgängig machbar)
+1. **`create_atomic_note`** - Stores a new piece of information in the memory system
+2. **`retrieve_memories`** - Searches for relevant memories based on semantic similarity
+3. **`get_memory_stats`** - Returns statistics about the memory system
+4. **`delete_atomic_note`** - Deletes a note from the memory system
+5. **`add_file`** - Stores the content of a file (e.g., .md) as a note, supports automatic chunking
+6. **`reset_memory`** - Resets the complete memory system (⚠️ irreversible)
 
 ### IDE Integration
 
 #### Cursor IDE
 
-1. Öffne die MCP-Konfigurationsdatei:
+1. Open the MCP configuration file:
    - Windows: `%APPDATA%\Cursor\User\globalStorage\saoudrizwan.claude-dev\settings\cline_mcp_settings.json`
    - macOS: `~/Library/Application Support/Cursor/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json`
    - Linux: `~/.config/Cursor/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json`
 
-2. Füge folgende Konfiguration hinzu:
+2. Add the following configuration:
 
 ```json
 {
@@ -107,19 +107,19 @@ python mcp_server.py
 }
 ```
 
-**Wichtig:** Passe `cwd` auf den absoluten Pfad zu deinem Projekt-Verzeichnis an!
+**Important:** Adjust `cwd` to the absolute path to your project directory!
 
-3. Starte Cursor neu, damit die Konfiguration geladen wird.
+3. Restart Cursor to load the configuration.
 
 #### Visual Studio Code (mit MCP Extension)
 
-1. Installiere die MCP Extension für VSCode (falls verfügbar)
+1. Install the MCP Extension for VSCode (if available)
 
-2. Öffne die VSCode Settings (JSON):
-   - `Ctrl+Shift+P` (Windows/Linux) oder `Cmd+Shift+P` (macOS)
-   - Tippe "Preferences: Open User Settings (JSON)"
+2. Open VSCode Settings (JSON):
+   - `Ctrl+Shift+P` (Windows/Linux) or `Cmd+Shift+P` (macOS)
+   - Type "Preferences: Open User Settings (JSON)"
 
-3. Füge die MCP Server Konfiguration hinzu:
+3. Add the MCP Server configuration:
 
 ```json
 {
@@ -133,7 +133,7 @@ python mcp_server.py
 }
 ```
 
-**Alternative:** Nutze die `mcp.json` Datei im Projekt-Root:
+**Alternative:** Use the `mcp.json` file in the project root:
 
 ```json
 {
@@ -147,24 +147,24 @@ python mcp_server.py
 }
 ```
 
-#### Verwendung in der IDE
+#### Usage in IDE
 
-Nach der Konfiguration stehen dir die MCP Tools direkt in der IDE zur Verfügung:
+After configuration, the MCP tools are directly available in your IDE:
 
-- **Chat/Composer**: Nutze die Tools über natürliche Sprache
-  - "Speichere diese Information: ..."
-  - "Suche nach Memories über: ..."
-  - "Zeige mir die Memory-Statistiken"
+- **Chat/Composer**: Use the tools via natural language
+  - "Store this information: ..."
+  - "Search for memories about: ..."
+  - "Show me the memory statistics"
 
-- **Code**: Die Tools werden automatisch als Funktionen verfügbar
+- **Code**: The tools are automatically available as functions
 
-Siehe `MCP_SERVER_SETUP.md` für detaillierte Informationen zu allen verfügbaren Tools.
+See `MCP_SERVER_SETUP.md` for detailed information about all available tools.
 
 ## 📚 Dokumentation
 
-- `docs/ARCHITECTURE.md` - System-Architektur
-- `docs/FINAL_COMPLIANCE_CHECK.md` - Paper-Compliance
-- `docs/TEST_REPORT.md` - Test-Ergebnisse
+- `docs/ARCHITECTURE.md` - System Architecture
+- `docs/FINAL_COMPLIANCE_CHECK.md` - Paper Compliance
+- `docs/TEST_REPORT.md` - Test Results
 - `MCP_SERVER_SETUP.md` - MCP Server Setup
 
 ## 🧪 Tests
@@ -176,19 +176,19 @@ python tests/test_code_structure.py
 
 ## 🧪 Benchmarking
 
-Das Projekt enthält ein modernes TUI-Benchmark-Tool für Ollama-Modelle:
+The project includes a modern TUI benchmark tool for Ollama models:
 
 ```bash
 python ollama_benchmark.py
 ```
 
-Siehe `BENCHMARK_README.md` für Details.
+See `BENCHMARK_README.md` for details.
 
 ## 📊 Status
 
 ✅ **100% Paper-Compliance**  
-✅ **Alle Tests bestanden**  
-✅ **Modulare Struktur**  
+✅ **All Tests Passed**  
+✅ **Modular Structure**  
 ✅ **Multi-Provider Support** (Ollama + OpenRouter)  
 ✅ **MCP Server Integration**  
 ✅ **Memory Reset & Management Tools**

@@ -1,7 +1,7 @@
 """
 A-MEM: Agentic Memory System
 
-Ein agentisches Memory-System für LLM Agents basierend auf dem Zettelkasten-Prinzip.
+An agentic memory system for LLM agents based on the Zettelkasten principle.
 """
 
 __version__ = "1.0.0"

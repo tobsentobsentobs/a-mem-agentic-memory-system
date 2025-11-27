@@ -1,5 +1,5 @@
 """
-Datenmodelle für Memory Notes
+Data models for Memory Notes
 """
 
 from pydantic import BaseModel, Field
@@ -8,7 +8,7 @@ from datetime import datetime
 import uuid
 
 class AtomicNote(BaseModel):
-    """Das Kern-Datenmodell für eine gespeicherte Erinnerung."""
+    """The core data model for a stored memory."""
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     content: str
     contextual_summary: str = ""

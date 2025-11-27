@@ -1,7 +1,7 @@
 """
 Storage Engine: GraphStore, VectorStore, StorageManager
 
-Implementiert Cross-Platform Locking, sicheres Laden und separiert Speichern von Hinzufügen.
+Implements Cross-Platform Locking, safe loading and separate saving from adding.
 """
 
 import json
@@ -22,7 +22,7 @@ try:
     def unlock_file(f): fcntl.flock(f, fcntl.LOCK_UN)
 except ImportError:
     # Windows Fallback (Simple No-Op or use portalocker if installed)
-    # Für Production auf Windows wird 'pip install portalocker' empfohlen
+    # For production on Windows, 'pip install portalocker' is recommended
     def lock_file(f): pass 
     def unlock_file(f): pass
 
@@ -42,7 +42,7 @@ class GraphStore:
                 unlock_file(lock_f)
 
     def load(self):
-        """Lädt den Graphen sicher. Verhindert Datenverlust bei korrupter JSON."""
+        """Loads the graph safely. Prevents data loss on corrupted JSON."""
         if settings.GRAPH_PATH.exists():
             try:
                 with open(settings.GRAPH_PATH, 'r', encoding='utf-8') as f:
@@ -56,8 +56,8 @@ class GraphStore:
                 raise RuntimeError("Graph database is corrupted. Check backup.")
             except Exception as e:
                 print(f"Error loading graph: {e}")
-                # Nur bei Lese-Problemen (Permissions etc) brechen wir ab, 
-                # bei 'Not Found' wird ein neuer erstellt.
+                # Only abort on read problems (Permissions etc), 
+                # on 'Not Found' a new one is created.
                 if not os.access(settings.GRAPH_PATH, os.R_OK):
                      raise
                 self.graph = nx.DiGraph()
@@ -65,7 +65,7 @@ class GraphStore:
             self.graph = nx.DiGraph()
 
     def save_snapshot(self):
-        """Speichert den aktuellen Zustand auf die Festplatte."""
+        """Saves the current state to disk."""
         with self._file_lock():
             data = nx.node_link_data(self.graph)
             # Atomic write pattern: Write to temp, then rename
@@ -75,11 +75,11 @@ class GraphStore:
             os.replace(temp_path, settings.GRAPH_PATH)
 
     def add_node(self, note: AtomicNote):
-        """Fügt Node hinzu (In-Memory). Speichern muss separat getriggert werden."""
+        """Adds node (In-Memory). Saving must be triggered separately."""
         self.graph.add_node(note.id, **note.model_dump(mode='json'))
 
     def add_edge(self, relation: NoteRelation):
-        """Fügt Edge hinzu (In-Memory)."""
+        """Adds edge (In-Memory)."""
         self.graph.add_edge(
             relation.source_id, 
             relation.target_id, 
@@ -89,12 +89,12 @@ class GraphStore:
         )
 
     def update_node(self, note: AtomicNote):
-        """Aktualisiert einen bestehenden Node im Graphen (Memory Evolution)."""
+        """Updates an existing node in the graph (Memory Evolution)."""
         if note.id not in self.graph:
-            # Falls Node nicht existiert, füge ihn hinzu
+            # If node doesn't exist, add it
             self.add_node(note)
         else:
-            # Update Node-Attribute
+            # Update node attributes
             self.graph.nodes[note.id].update(note.model_dump(mode='json'))
 
     def get_neighbors(self, node_id: str) -> List[Dict]:
@@ -108,21 +108,21 @@ class GraphStore:
         return results
     
     def remove_node(self, node_id: str):
-        """Entfernt einen Node und alle zugehörigen Edges (In-Memory)."""
+        """Removes a node and all associated edges (In-Memory)."""
         if node_id in self.graph:
-            # NetworkX entfernt automatisch alle Edges beim Löschen eines Nodes
+            # NetworkX automatically removes all edges when deleting a node
             self.graph.remove_node(node_id)
     
     def reset(self):
-        """Setzt den Graph komplett zurück (In-Memory + Datei)."""
-        # Lösche Graph-Datei falls vorhanden
+        """Resets the graph completely (In-Memory + file)."""
+        # Delete graph file if it exists
         if settings.GRAPH_PATH.exists():
             settings.GRAPH_PATH.unlink()
         
-        # Erstelle neuen leeren Graph
+        # Create new empty graph
         self.graph = nx.DiGraph()
         
-        # Speichere leeren Graph
+        # Save empty graph
         self.save_snapshot()
 
 class VectorStore:
@@ -134,7 +134,7 @@ class VectorStore:
         self._validate_dimension()
     
     def _get_expected_dimension(self) -> int:
-        """Ermittelt die erwartete Embedding-Dimension basierend auf dem konfigurierten Model."""
+        """Determines the expected embedding dimension based on the configured model."""
         from ..config import settings
         if settings.LLM_PROVIDER == "openrouter":
             # OpenRouter Embedding Models - bekannte Dimensionen
@@ -159,29 +159,29 @@ class VectorStore:
             elif "all-minilm" in model:
                 return 384
             else:
-                # Fallback für unbekannte Ollama Models
+                # Fallback for unknown Ollama models
                 print(f"Warning: Unknown Ollama embedding model '{model}'. Assuming 768 dimensions.")
                 return 768
     
     def _validate_dimension(self):
-        """Validiert, ob die Collection mit der erwarteten Dimension kompatibel ist."""
+        """Validates whether the collection is compatible with the expected dimension."""
         try:
-            # Versuche ein Test-Embedding zu erstellen (nur Dimension prüfen)
+            # Try to create a test embedding (only check dimension)
             test_embedding = [0.0] * self._expected_dimension
-            # Prüfe ob Collection bereits Items hat
+            # Check if collection already has items
             if self.collection.count() > 0:
-                # Hole ein existierendes Item um die aktuelle Dimension zu prüfen
+                # Get an existing item to check the current dimension
                 sample = self.collection.get(limit=1)
                 if sample['ids']:
-                    # ChromaDB speichert Embeddings intern, wir können die Dimension nicht direkt abfragen
-                    # Aber wir können versuchen, ein neues Item mit der erwarteten Dimension hinzuzufügen
-                    # und sehen ob es fehlschlägt
+                    # ChromaDB stores embeddings internally, we can't directly query the dimension
+                    # But we can try to add a new item with the expected dimension
+                    # and see if it fails
                     pass
         except Exception as e:
             print(f"Warning: Dimension validation error: {e}")
     
     def _check_dimension_compatibility(self, embedding: List[float]) -> bool:
-        """Prüft ob das Embedding mit der erwarteten Dimension übereinstimmt."""
+        """Checks if the embedding matches the expected dimension."""
         actual_dim = len(embedding)
         if actual_dim != self._expected_dimension:
             from ..config import settings
@@ -194,15 +194,15 @@ class VectorStore:
         return True
 
     def add(self, note: AtomicNote, embedding: List[float]):
-        # Dimension-Validierung
+        # Dimension validation
         if not self._check_dimension_compatibility(embedding):
             raise ValueError(
                 f"Embedding dimension mismatch. Expected {self._expected_dimension}, got {len(embedding)}. "
                 f"Delete 'data/chroma' directory to reset or use consistent embedding models."
             )
         
-        # ChromaDB handelt interne Locks meist selbst, aber wir nutzen es sync.
-        # Im Logic Layer wird dies in einen Thread ausgelagert.
+        # ChromaDB handles internal locks mostly itself, but we use it sync.
+        # In the Logic Layer this is offloaded to a thread.
         self.collection.add(
             ids=[note.id],
             embeddings=[embedding],
@@ -230,17 +230,17 @@ class VectorStore:
         return results['ids'][0], results['distances'][0]
 
     def update(self, note_id: str, note: AtomicNote, embedding: List[float]):
-        """Aktualisiert eine bestehende Note in ChromaDB (Memory Evolution)."""
-        # Dimension-Validierung
+        """Updates an existing note in ChromaDB (Memory Evolution)."""
+        # Dimension validation
         if not self._check_dimension_compatibility(embedding):
             raise ValueError(
                 f"Update embedding dimension mismatch. Expected {self._expected_dimension}, got {len(embedding)}. "
                 f"Delete 'data/chroma' directory to reset or use consistent embedding models."
             )
         
-        # ChromaDB unterstützt update() - falls nicht vorhanden, delete + add
+        # ChromaDB supports update() - if not available, delete + add
         try:
-            # Versuche Update (falls ChromaDB Version es unterstützt)
+            # Try update (if ChromaDB version supports it)
             self.collection.update(
                 ids=[note_id],
                 embeddings=[embedding],
@@ -251,27 +251,27 @@ class VectorStore:
                 }]
             )
         except AttributeError:
-            # Fallback: Delete + Add (für ältere ChromaDB Versionen)
+            # Fallback: Delete + Add (for older ChromaDB versions)
             self.collection.delete(ids=[note_id])
             self.add(note, embedding)
     
     def delete(self, note_id: str):
-        """Löscht eine Note aus ChromaDB."""
+        """Deletes a note from ChromaDB."""
         try:
             self.collection.delete(ids=[note_id])
         except Exception as e:
             print(f"Warning: Error deleting note {note_id} from vector store: {e}")
     
     def reset(self):
-        """Setzt die ChromaDB Collection komplett zurück."""
+        """Resets the ChromaDB collection completely."""
         try:
-            # Lösche Collection
+            # Delete collection
             self.client.delete_collection(name="memories")
-            # Erstelle neue leere Collection
+            # Create new empty collection
             self.collection = self.client.get_or_create_collection(name="memories")
         except Exception as e:
             print(f"Warning: Error resetting vector store: {e}")
-            # Fallback: Versuche Collection neu zu erstellen
+            # Fallback: Try to recreate collection
             try:
                 self.collection = self.client.get_or_create_collection(name="memories")
             except Exception as e2:
@@ -279,7 +279,7 @@ class VectorStore:
                 raise
 
 class StorageManager:
-    """Fassade für Vektor- und Graph-Speicher."""
+    """Facade for vector and graph storage."""
     def __init__(self):
         self.vector = VectorStore()
         self.graph = GraphStore()
@@ -287,7 +287,7 @@ class StorageManager:
     def get_note(self, note_id: str) -> Optional[AtomicNote]:
         node_data = self.graph.graph.nodes.get(note_id)
         if node_data:
-            # Pydantic Validierung sicherstellen, falls Felder fehlen
+            # Ensure Pydantic validation, in case fields are missing
             try:
                 return AtomicNote(**node_data)
             except Exception as e:
@@ -296,15 +296,15 @@ class StorageManager:
         return None
     
     def delete_note(self, note_id: str) -> bool:
-        """Löscht eine Note aus Graph und Vector Store."""
-        # Prüfe ob Note existiert
+        """Deletes a note from Graph and Vector Store."""
+        # Check if note exists
         if note_id not in self.graph.graph:
             return False
         
         try:
-            # Lösche aus Graph (entfernt automatisch alle Edges)
+            # Delete from graph (automatically removes all edges)
             self.graph.remove_node(note_id)
-            # Lösche aus Vector Store
+            # Delete from vector store
             self.vector.delete(note_id)
             return True
         except Exception as e:
@@ -312,9 +312,9 @@ class StorageManager:
             return False
     
     def reset(self):
-        """Setzt Graph und Vector Store komplett zurück."""
-        # Reset Graph
+        """Resets Graph and Vector Store completely."""
+        # Reset graph
         self.graph.reset()
-        # Reset Vector Store
+        # Reset vector store
         self.vector.reset()
 

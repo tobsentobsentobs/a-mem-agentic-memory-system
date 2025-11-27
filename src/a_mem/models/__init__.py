@@ -1,5 +1,5 @@
 """
-Datenmodelle für A-MEM
+Data models for A-MEM
 """
 
 from .note import AtomicNote, NoteInput, NoteRelation, SearchResult

@@ -1,5 +1,5 @@
 """
-Core Logic für A-MEM
+Core Logic for A-MEM
 """
 
 from .logic import MemoryController

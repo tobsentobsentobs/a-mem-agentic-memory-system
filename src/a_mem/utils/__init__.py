@@ -1,5 +1,5 @@
 """
-Utilities für A-MEM
+Utilities for A-MEM
 """
 
 from .llm import LLMService

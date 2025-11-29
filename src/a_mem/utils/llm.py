@@ -49,7 +49,7 @@ class LLMService:
             response.raise_for_status()
             return response.json()["message"]["content"]
         except Exception as e:
-            print(f"Ollama LLM Error: {e}")
+            print(f"Ollama LLM Error: {e}", file=sys.stderr)
             raise
     
     def _call_openrouter(self, prompt: str, system: Optional[str] = None) -> str:
@@ -82,7 +82,7 @@ class LLMService:
             response.raise_for_status()
             return response.json()["choices"][0]["message"]["content"]
         except Exception as e:
-            print(f"OpenRouter LLM Error: {e}")
+            print(f"OpenRouter LLM Error: {e}", file=sys.stderr)
             raise
     
     def _call_llm(self, prompt: str, system: Optional[str] = None) -> str:
@@ -91,7 +91,7 @@ class LLMService:
             try:
                 return self._call_openrouter(prompt, system)
             except Exception as e:
-                print(f"OpenRouter failed, falling back to Ollama: {e}")
+                print(f"OpenRouter failed, falling back to Ollama: {e}", file=sys.stderr)
                 # Fallback to Ollama
                 return self._call_ollama(prompt, system)
         else:
@@ -111,7 +111,7 @@ class LLMService:
             response.raise_for_status()
             return response.json()["embedding"]
         except Exception as e:
-            print(f"Ollama Embedding Error: {e}")
+            print(f"Ollama Embedding Error: {e}", file=sys.stderr)
             # Fallback: Mock embedding
             return [0.0] * 768  # nomic-embed-text has 768 dimensions
     
@@ -139,7 +139,7 @@ class LLMService:
             response.raise_for_status()
             return response.json()["data"][0]["embedding"]
         except Exception as e:
-            print(f"OpenRouter Embedding Error: {e}")
+            print(f"OpenRouter Embedding Error: {e}", file=sys.stderr)
             raise
 
     def _clean_json_response(self, content: str) -> Dict[str, Any]:
@@ -169,7 +169,7 @@ class LLMService:
             try:
                 return self._get_embedding_openrouter(text)
             except Exception as e:
-                print(f"OpenRouter embedding failed, falling back to Ollama: {e}")
+                print(f"OpenRouter embedding failed, falling back to Ollama: {e}", file=sys.stderr)
                 # Fallback to Ollama
                 return self._get_embedding_ollama(text)
         else:
@@ -205,7 +205,7 @@ Return ONLY the JSON object, no markdown formatting, no explanations."""
                 data["type"] = "concept"  # Default fallback
             return data
         except Exception as e:
-            print(f"LLM Extraction Error: {e}")
+            print(f"LLM Extraction Error: {e}", file=sys.stderr)
             return {"summary": content[:50]+"...", "keywords": [], "tags": [], "type": "concept"}
 
     def check_link(self, note_a: AtomicNote, note_b: AtomicNote) -> Tuple[bool, Optional[NoteRelation]]:
@@ -238,7 +238,7 @@ Return ONLY the JSON object, no markdown formatting, no explanations."""
                 )
                 return True, relation
         except Exception as e:
-            print(f"LLM Linking Error: {e}")
+            print(f"LLM Linking Error: {e}", file=sys.stderr)
         
         return False, None
 
@@ -292,6 +292,6 @@ Return ONLY the JSON object, no markdown formatting, no explanations."""
                 )
                 return evolved_note
         except Exception as e:
-            print(f"LLM Evolution Error: {e}")
+            print(f"LLM Evolution Error: {e}", file=sys.stderr)
         
         return None

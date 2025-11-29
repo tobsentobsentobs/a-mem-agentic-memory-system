@@ -10,6 +10,7 @@ import networkx as nx
 import chromadb
 from typing import List, Dict, Tuple, Optional
 import os
+import sys
 from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
@@ -21,7 +22,7 @@ from ..models.note import AtomicNote, NoteRelation
 LOG_FILE = settings.DATA_DIR / "graph_save.log"
 
 def _write_log(message: str):
-    """Writes a log message to file and console."""
+    """Writes a log message to file and stderr (not stdout, to avoid breaking MCP JSON-RPC)."""
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     log_entry = f"[{timestamp}] {message}\n"
     
@@ -31,10 +32,10 @@ def _write_log(message: str):
         with open(LOG_FILE, 'a', encoding='utf-8') as f:
             f.write(log_entry)
     except Exception as e:
-        print(f"[WARNING] Failed to write log: {e}")
+        print(f"[WARNING] Failed to write log: {e}", file=sys.stderr)
     
-    # Also print to console
-    print(message)
+    # Print to stderr (not stdout) to avoid breaking MCP JSON-RPC
+    print(message, file=sys.stderr)
 
 # --- Cross-Platform Locking ---
 try:
@@ -76,7 +77,7 @@ class GraphStore:
                 shutil.copy(settings.GRAPH_PATH, backup_path)
                 raise RuntimeError("Graph database is corrupted. Check backup.")
             except Exception as e:
-                print(f"Error loading graph: {e}")
+                print(f"Error loading graph: {e}", file=sys.stderr)
                 # Only abort on read problems (Permissions etc), 
                 # on 'Not Found' a new one is created.
                 if not os.access(settings.GRAPH_PATH, os.R_OK):
@@ -216,7 +217,7 @@ class VectorStore:
                 return 1536
             else:
                 # Fallback: Versuche aus Model-Name zu extrahieren oder Standard
-                print(f"Warning: Unknown OpenRouter embedding model '{model}'. Assuming 1536 dimensions.")
+                print(f"Warning: Unknown OpenRouter embedding model '{model}'. Assuming 1536 dimensions.", file=sys.stderr)
                 return 1536
         else:
             # Ollama Embedding Models
@@ -227,7 +228,7 @@ class VectorStore:
                 return 384
             else:
                 # Fallback for unknown Ollama models
-                print(f"Warning: Unknown Ollama embedding model '{model}'. Assuming 768 dimensions.")
+                print(f"Warning: Unknown Ollama embedding model '{model}'. Assuming 768 dimensions.", file=sys.stderr)
                 return 768
     
     def _validate_dimension(self):
@@ -245,18 +246,18 @@ class VectorStore:
                     # and see if it fails
                     pass
         except Exception as e:
-            print(f"Warning: Dimension validation error: {e}")
+            print(f"Warning: Dimension validation error: {e}", file=sys.stderr)
     
     def _check_dimension_compatibility(self, embedding: List[float]) -> bool:
         """Checks if the embedding matches the expected dimension."""
         actual_dim = len(embedding)
         if actual_dim != self._expected_dimension:
             from ..config import settings
-            print(f"[WARNING] CRITICAL: Embedding dimension mismatch!")
-            print(f"   Expected: {self._expected_dimension} (from {settings.LLM_PROVIDER}/{settings.EMBEDDING_MODEL})")
-            print(f"   Actual: {actual_dim}")
-            print(f"   This will cause ChromaDB errors!")
-            print(f"   Solution: Delete 'data/chroma' directory and restart, or use consistent embedding models.")
+            print(f"[WARNING] CRITICAL: Embedding dimension mismatch!", file=sys.stderr)
+            print(f"   Expected: {self._expected_dimension} (from {settings.LLM_PROVIDER}/{settings.EMBEDDING_MODEL})", file=sys.stderr)
+            print(f"   Actual: {actual_dim}", file=sys.stderr)
+            print(f"   This will cause ChromaDB errors!", file=sys.stderr)
+            print(f"   Solution: Delete 'data/chroma' directory and restart, or use consistent embedding models.", file=sys.stderr)
             return False
         return True
 
@@ -327,7 +328,7 @@ class VectorStore:
         try:
             self.collection.delete(ids=[note_id])
         except Exception as e:
-            print(f"Warning: Error deleting note {note_id} from vector store: {e}")
+            print(f"Warning: Error deleting note {note_id} from vector store: {e}", file=sys.stderr)
     
     def reset(self):
         """Resets the ChromaDB collection completely."""
@@ -337,12 +338,12 @@ class VectorStore:
             # Create new empty collection
             self.collection = self.client.get_or_create_collection(name="memories")
         except Exception as e:
-            print(f"Warning: Error resetting vector store: {e}")
+            print(f"Warning: Error resetting vector store: {e}", file=sys.stderr)
             # Fallback: Try to recreate collection
             try:
                 self.collection = self.client.get_or_create_collection(name="memories")
             except Exception as e2:
-                print(f"Critical: Could not recreate collection: {e2}")
+                print(f"Critical: Could not recreate collection: {e2}", file=sys.stderr)
                 raise
 
 class StorageManager:
@@ -358,7 +359,7 @@ class StorageManager:
             try:
                 return AtomicNote(**node_data)
             except Exception as e:
-                print(f"Warning: Node {note_id} corrupted: {e}")
+                print(f"Warning: Node {note_id} corrupted: {e}", file=sys.stderr)
                 return None
         return None
     
@@ -375,7 +376,7 @@ class StorageManager:
             self.vector.delete(note_id)
             return True
         except Exception as e:
-            print(f"Error deleting note {note_id}: {e}")
+            print(f"Error deleting note {note_id}: {e}", file=sys.stderr)
             return False
     
     def reset(self):

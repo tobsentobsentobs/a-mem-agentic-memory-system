@@ -84,7 +84,8 @@ def log_event(event_type: str, data: Dict[str, Any]) -> None:
         with open(EVENT_LOG_PATH, "a", encoding="utf-8") as f:
             f.write(json.dumps(entry, ensure_ascii=False) + "\n")
     except Exception as e:
-        print(f"Event logging error: {e}")
+        import sys
+        print(f"Event logging error: {e}", file=sys.stderr)
 
 
 def keyword_prefilter(query: str, notes: list[AtomicNote]) -> list[AtomicNote]:

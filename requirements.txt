@@ -31,3 +31,7 @@ aiohttp>=3.9.0
 # CLI Enhancements (optional, für amem_stats)
 rich>=13.0.0
 
+# Researcher Tools (optional, für Researcher Agent)
+beautifulsoup4>=4.12.0
+html2text>=2024.2.26
+

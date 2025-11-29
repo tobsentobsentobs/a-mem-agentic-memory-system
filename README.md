@@ -365,7 +365,25 @@ cat data/events.jsonl | jq .
 - `docs/EMBEDDING_DIMENSIONS.md` - Embedding Dimension Handling Guide
 - `docs/RESEARCHER_AGENT_DETAILED.md` - **Ausführliche Researcher Agent Dokumentation** (Code-Einbindung, Funktionen, Workflow)
 - `docs/MEMORY_ENZYMES_DETAILED.md` - **Ausführliche Memory Enzymes Dokumentation** (Code-Einbindung, Funktionen, Workflow)
+- `docs/ARCHITECTURE_DIAGRAM.md` - **Vollständige Architektur-Darstellung** (Mermaid Diagramme)
 - `tools/RESEARCHER_README.md` - Researcher Agent Quick Reference
+
+### 📊 Visual Diagrams
+
+Zusätzliche SVG-Diagramme finden Sie im `docs/` Verzeichnis:
+- `a-mem-system-architecture.svg` - System-Architektur Übersicht
+- `a-mem-class-diagram.svg` - Klassen-Diagramm
+- `a-mem-dataflow.svg` - Datenfluss-Diagramm
+- `a-mem-storage-architecture.svg` - Storage-Architektur Detail
+- `a-mem-memory-enzymes.svg` - Memory Enzymes Workflow
+- `a-mem-researcher-agent.svg` - Researcher Agent Workflow
+- `a-mem-type-classification.svg` - Type Classification System
+- `a-mem-mcp-tools.svg` - MCP Tools Übersicht
+- `a-mem-mindmap.svg` - Mindmap der Komponenten
+- `a-mem-journey.svg` - User Journey
+- `a-mem-er-diagram.svg` - Entity-Relationship Diagramm
+- `a-mem-state-diagram.svg` - State Diagram
+- `a-mem-timeline.svg` - Timeline Visualisierung
 ## 🧪 Tests
 
 ```bash
